@@ -1,0 +1,13 @@
+- name: create {{ hdfs_datanode_data_dirs }} dirs for datanode
+  file: path={{ item }} state=directory owner={{ hadoop_user }} group={{ hadoop_user }} mode=0755
+  with_items:
+    - "{{ hdfs_datanode_data_dirs }}"
+
+- name: put systemd unit file 
+  template: src=hdfs-datanode.service.j2 dest=/etc/systemd/system/hdfs-datanode.service owner=root mode=0644
+
+- name: reload systemd 
+  shell: systemctl daemon-reload
+
+- name: enable and start datanode
+  service: name=hdfs-datanode enabled=yes state=restarted
